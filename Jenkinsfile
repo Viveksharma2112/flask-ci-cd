@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/<your-username>/flask-ci-cd.git'
-        DOCKER_IMAGE = 'yourdockerhub/flask-app'
-        DEPLOY_SERVER = 'ec2-user@<your-server-ip>'
+        REPO_URL = 'https://github.com/Viveksharma2112/flask-ci-cd'
+        DOCKER_IMAGE = 'vivek20053/flask-app'
+        DEPLOY_SERVER = 'ec2-user@13.203.202.22'
     }
 
     stages {
