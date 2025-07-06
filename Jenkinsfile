@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: "https://github.com/Viveksharma2112/flask-ci-cd"
+                git branch: 'main', url: "${REPO_URL}"
             }
         }
 
@@ -22,15 +22,15 @@ pipeline {
             }
         }
 
-       stage('Push Docker Image') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-            script {
-                sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                    docker push ${DOCKER_IMAGE}:latest
-
-                    '''
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sh '''
+                            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                            docker push ${DOCKER_IMAGE}:latest
+                        '''
+                    }
                 }
             }
         }
@@ -40,7 +40,7 @@ pipeline {
                 script {
                     sshagent(['deploy-key']) {
                         sh '''
-                            ssh ${DEPLOY_SERVER} "docker pull ${DOCKER_IMAGE}:latest && docker run -d -p 5000:5000 ${DOCKER_IMAGE}:latest"
+                            ssh ${DEPLOY_SERVER} "docker stop flask-container || true && docker rm flask-container || true && docker pull ${DOCKER_IMAGE}:latest && docker run --name flask-container -d -p 5000:5000 ${DOCKER_IMAGE}:latest"
                         '''
                     }
                 }
