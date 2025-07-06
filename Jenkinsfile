@@ -22,12 +22,14 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    sh '''
-                        echo "Vivek@2005" | docker login -u "vivek20053" --password-stdin
-                       docker push ${DOCKER_IMAGE}:latest
+       stage('Push Docker Image') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+            script {
+                sh '''
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    docker push ${DOCKER_IMAGE}:latest
+
                     '''
                 }
             }
